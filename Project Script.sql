@@ -38,5 +38,39 @@ where lower(ratings) like '₹%';
 
 ----------------------------------------
 
-select *
+-- Cast column ratings to float type and ignore blank cells
+alter table development_products
+alter column ratings
+type float
+using nullif(ratings,'')::float;
+
+-- Removing char from discount_price column
+update development_products 
+set discount_price  = trim(discount_price, '₹');
+
+-- Removing comma from discount_price column
+update development_products 
+set discount_price  = regexp_replace(discount_price , ',', '', 'g');
+
+-- Cast column discount_price to float type and ignore blank cells
+alter table development_products
+alter column discount_price
+type float
+using nullif(discount_price,'')::float;
+
+-- Removing char from actual_price column
+update development_products 
+set actual_price  = trim(actual_price , '₹');
+
+-- Removing comma from actual_price column
+update development_products 
+set actual_price  = regexp_replace(actual_price  , ',', '', 'g');
+
+-- Cast column actual_price to float type and ignore blank cells
+alter table development_products
+alter column actual_price
+type float
+using nullif(actual_price,'')::float;
+
+select * 
 from development_products dp ;
