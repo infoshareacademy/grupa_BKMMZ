@@ -72,5 +72,16 @@ alter column actual_price
 type float
 using nullif(actual_price,'')::float;
 
-select * 
-from development_products dp ;
+
+-- Removing comma from no_of_ratings column
+update development_products 
+set no_of_ratings  = regexp_replace(no_of_ratings  , ',', '', 'g');
+
+
+-- Cast column no_of_ratings to numeric type and ignore blank cells
+alter table development_products
+alter column no_of_ratings
+type numeric
+using nullif(no_of_ratings,'')::numeric;
+
+
