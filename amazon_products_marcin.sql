@@ -79,15 +79,44 @@ type numeric
 using nullif(no_of_ratings, '')::numeric;
 
 
-----------------------------------------------
+-------------------------------------------------------
 
 /* 
 analyze catogories:
- 1 accessories, 
- 3 bags & luggage, 
- 6 grocery & gourmet foods, 
- 17 toys & baby products 
+ 1 - accessories, 
+ 3 - bags & luggage, 
+ 6 - grocery & gourmet foods, 
+ 17 - toys & baby products 
 */
+
+
+-- Numbers products of each main category 
+select main_category, count(*) as numbers_of_products
+from duplicate_products dp
+group by main_category; 
+
+
+-- Average ratings of each main category
+select main_category, round(cast(avg(ratings) as numeric), 2) as average_ratings
+from duplicate_products dp 
+group by main_category; 
+
+
+-- Sub_categories with the most amount ratings
+select sub_category, no_of_ratings from duplicate_products dp
+where no_of_ratings = (select max(no_of_ratings) from duplicate_products dp) 
+group by dp.no_of_ratings, dp.sub_category;  
+
+
+
+-- main categories with the top 5 average ratings
+select main_category 
+from (select main_category, avg(ratings) as average_ratings
+      from duplicate_products dp group by main_category) as subquery
+order by subquery.average_ratings desc
+limit 5;
+
+-------------------------------------------------------
 
 
 
