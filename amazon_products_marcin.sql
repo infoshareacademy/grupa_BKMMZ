@@ -89,32 +89,45 @@ analyze catogories:
  17 - toys & baby products 
 */
 
+-- List main categories and sub categories
+select main_category, sub_category 
+from duplicate_products dp 
+group by main_category, sub_category;  
 
 -- Numbers products of each main category 
 select main_category, count(*) as numbers_of_products
 from duplicate_products dp
+where main_category in ('accessories', 'bags & luggage',
+						'grocery & gourmet foods', 'toys & baby products')
 group by main_category; 
 
 
 -- Average ratings of each main category
 select main_category, round(cast(avg(ratings) as numeric), 2) as average_ratings
-from duplicate_products dp 
+from duplicate_products dp
+where main_category in ('accessories', 'bags & luggage',
+						'grocery & gourmet foods', 'toys & baby products')
 group by main_category; 
 
 
 -- Sub_categories with the most amount ratings
 select sub_category, no_of_ratings from duplicate_products dp
-where no_of_ratings = (select max(no_of_ratings) from duplicate_products dp) 
-group by dp.no_of_ratings, dp.sub_category;  
-
+where no_of_ratings = (select max(no_of_ratings) from duplicate_products dp
+					  where main_category in 
+					  ('accessories', 'bags & luggage',
+					  'grocery & gourmet foods', 'toys & baby products'))
+group by dp.sub_category, dp.no_of_ratings;
 
 
 -- main categories with the top 5 average ratings
 select main_category 
 from (select main_category, avg(ratings) as average_ratings
-      from duplicate_products dp group by main_category) as subquery
-order by subquery.average_ratings desc
-limit 5;
+      from duplicate_products dp 
+      where main_category in 
+      ('accessories', 'bags & luggage', 
+      'grocery & gourmet foods', 'toys & baby products')
+      group by main_category) as subquery
+order by subquery.average_ratings desc;
 
 -------------------------------------------------------
 
