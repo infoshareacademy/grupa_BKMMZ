@@ -69,7 +69,7 @@ using nullif(actual_price, '')::float;
 
 -- Removing comma from no_of_ratings column
 update duplicate_products 
-set no_of_ratings  = regexp_replace(no_of_ratings, ',', '', 'g');
+set no_of_ratings = regexp_replace(no_of_ratings, ',', '', 'g');
 
 
 -- Cast column no_of_ratings to numeric type and ignore blank cells
@@ -94,8 +94,9 @@ select main_category, sub_category
 from duplicate_products dp 
 group by main_category, sub_category;  
 
--- Numbers products of each main category 
-select main_category, count(*) as numbers_of_products
+
+-- Count products of each main category 
+select distinct main_category, count(*) as products_count 
 from duplicate_products dp
 where main_category in ('accessories', 'bags & luggage',
 						'grocery & gourmet foods', 'toys & baby products')
@@ -112,25 +113,72 @@ group by main_category;
 
 -- Sub_categories with the most amount ratings
 select sub_category, no_of_ratings from duplicate_products dp
-where no_of_ratings = (select max(no_of_ratings) from duplicate_products dp
-					  where main_category in 
-					  ('accessories', 'bags & luggage',
-					  'grocery & gourmet foods', 'toys & baby products'))
+where no_of_ratings = (
+					   select max(no_of_ratings) from duplicate_products dp
+					   where main_category in 
+					   ('accessories', 'bags & luggage',
+					   'grocery & gourmet foods', 'toys & baby products'
+					  ))
 group by dp.sub_category, dp.no_of_ratings;
 
 
--- main categories with the top 5 average ratings
+-- Main categories with the largest average ratings (top2)
 select main_category 
-from (select main_category, avg(ratings) as average_ratings
+from (
+      select main_category, avg(ratings) as average_ratings
       from duplicate_products dp 
       where main_category in 
       ('accessories', 'bags & luggage', 
       'grocery & gourmet foods', 'toys & baby products')
-      group by main_category) as subquery
-order by subquery.average_ratings desc;
+      group by main_category
+) as subquery
+order by subquery.average_ratings desc limit 2;
+
 
 -------------------------------------------------------
 
+
+
+-- Average discount of each four categories
+select main_category, 
+round(cast(avg(discount_price) as numeric), 2) as average_discount
+from duplicate_products dp
+where main_category in 
+      ('accessories', 'bags & luggage', 
+      'grocery & gourmet foods', 'toys & baby products')
+group by dp.main_category; 
+
+
+
+-- The most expensive product of each four categories
+select j1.product_name, j1.main_category, max_price 
+from (
+	  select main_category, max(actual_price) as max_price
+      from duplicate_products dp where main_category in 
+	  ('accessories', 'bags & luggage',
+      'grocery & gourmet foods', 'toys & baby products')
+	  group by main_category
+) as sq
+join (
+	select name as product_name, main_category, actual_price from duplicate_products
+) as j1
+on sq.main_category = j1.main_category and sq.max_price = j1.actual_price;
+ 
+
+
+-- The smallest discount of each four sub categories 
+select j1.product_name, j1.sub_category, max_discount
+from (
+	  select sub_category, min(discount_price) as max_discount
+      from duplicate_products dp where main_category in 
+	  ('accessories', 'bags & luggage',
+      'grocery & gourmet foods', 'toys & baby products')
+	  group by sub_category
+) as sq
+join (
+	select name as product_name, sub_category, discount_price from duplicate_products
+) as j1
+on sq.sub_category = j1.sub_category and sq.max_discount = j1.discount_price;
 
 
 
