@@ -167,9 +167,9 @@ on sq.main_category = j1.main_category and sq.max_price = j1.actual_price;
 
 
 -- The smallest discount of each four sub categories 
-select j1.product_name, j1.sub_category, max_discount
+select j1.product_name, j1.sub_category, min_discount
 from (
-	  select sub_category, min(discount_price) as max_discount
+	  select sub_category, min(discount_price) as min_discount
       from duplicate_products dp where main_category in 
 	  ('accessories', 'bags & luggage',
       'grocery & gourmet foods', 'toys & baby products')
@@ -178,7 +178,34 @@ from (
 join (
 	select name as product_name, sub_category, discount_price from duplicate_products
 ) as j1
-on sq.sub_category = j1.sub_category and sq.max_discount = j1.discount_price;
+on sq.sub_category = j1.sub_category and sq.min_discount = j1.discount_price;
+
+
+-------------------------------------------------------
+
+
+-- Percent products on each main category, 
+-- when ratings higher than 4 and price reduction higher than 20
+select main_category,
+round(cast(sum(case when ratings > 4 and discount_price > 20 then 1 else 0 end)
+as numeric) / count(*) * 100, 2) as percent_product
+from duplicate_products dp
+where main_category in 
+	  ('accessories', 'bags & luggage',
+      'grocery & gourmet foods', 'toys & baby products')
+group by main_category; 
+
+
+--correlation about amount of ratings and ratings
+select corr(no_of_ratings, ratings) as correlation FROM duplicate_products dp;
+
+
+-------------------------------------------------------
+
+
+
+
+
 
 
 
