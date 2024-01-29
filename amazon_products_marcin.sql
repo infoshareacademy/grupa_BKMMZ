@@ -84,30 +84,33 @@ using nullif(no_of_ratings, '')::numeric;
 /* 
 analyze catogories:
  1 - accessories, 
- 3 - bags & luggage, 
- 6 - grocery & gourmet foods, 
- 17 - toys & baby products 
+ 11 - men's clothing, 
+ 12 - men's shoes, 
+ 19 - women's clothing 
+ 20 - women's shoes
 */
 
 -- List main categories and sub categories
-select main_category, sub_category 
-from duplicate_products dp 
-group by main_category, sub_category;  
+SELECT main_category
+FROM duplicate_products dp
+WHERE main_category IN ('accessories', 'men''s clothing',
+'men''s shoes', 'women''s clothing', 'women''s shoes')
+GROUP BY main_category;  
 
 
 -- Count products of each main category 
 select distinct main_category, count(*) as products_count 
 from duplicate_products dp
-where main_category in ('accessories', 'bags & luggage',
-						'grocery & gourmet foods', 'toys & baby products')
+where main_category in ('accessories', 'men''s clothing',
+'men''s shoes', 'women''s clothing', 'women''s shoes')
 group by main_category; 
 
 
 -- Average ratings of each main category
 select main_category, round(cast(avg(ratings) as numeric), 2) as average_ratings
 from duplicate_products dp
-where main_category in ('accessories', 'bags & luggage',
-						'grocery & gourmet foods', 'toys & baby products')
+where main_category in ('accessories', 'men''s clothing',
+'men''s shoes', 'women''s clothing', 'women''s shoes')
 group by main_category; 
 
 
@@ -116,8 +119,8 @@ select sub_category, no_of_ratings from duplicate_products dp
 where no_of_ratings = (
 					   select max(no_of_ratings) from duplicate_products dp
 					   where main_category in 
-					   ('accessories', 'bags & luggage',
-					   'grocery & gourmet foods', 'toys & baby products'
+					   ('accessories', 'men''s clothing',
+						'men''s shoes', 'women''s clothing', 'women''s shoes'
 					  ))
 group by dp.sub_category, dp.no_of_ratings;
 
@@ -128,8 +131,8 @@ from (
       select main_category, avg(ratings) as average_ratings
       from duplicate_products dp 
       where main_category in 
-      ('accessories', 'bags & luggage', 
-      'grocery & gourmet foods', 'toys & baby products')
+      ('accessories', 'men''s clothing',
+	  'men''s shoes', 'women''s clothing', 'women''s shoes')
       group by main_category
 ) as subquery
 order by subquery.average_ratings desc limit 2;
@@ -144,8 +147,8 @@ select main_category,
 round(cast(avg(discount_price) as numeric), 2) as average_discount
 from duplicate_products dp
 where main_category in 
-      ('accessories', 'bags & luggage', 
-      'grocery & gourmet foods', 'toys & baby products')
+      ('accessories', 'men''s clothing',
+       'men''s shoes', 'women''s clothing', 'women''s shoes')
 group by dp.main_category; 
 
 
@@ -155,8 +158,8 @@ select j1.product_name, j1.main_category, max_price
 from (
 	  select main_category, max(actual_price) as max_price
       from duplicate_products dp where main_category in 
-	  ('accessories', 'bags & luggage',
-      'grocery & gourmet foods', 'toys & baby products')
+	  ('accessories', 'men''s clothing',
+	  'men''s shoes', 'women''s clothing', 'women''s shoes')
 	  group by main_category
 ) as sq
 join (
@@ -171,8 +174,8 @@ select j1.product_name, j1.sub_category, min_discount
 from (
 	  select sub_category, min(discount_price) as min_discount
       from duplicate_products dp where main_category in 
-	  ('accessories', 'bags & luggage',
-      'grocery & gourmet foods', 'toys & baby products')
+	  ('accessories', 'men''s clothing',
+	  'men''s shoes', 'women''s clothing', 'women''s shoes')
 	  group by sub_category
 ) as sq
 join (
@@ -191,8 +194,8 @@ round(cast(sum(case when ratings > 4 and discount_price > 20 then 1 else 0 end)
 as numeric) / count(*) * 100, 2) as percent_product
 from duplicate_products dp
 where main_category in 
-	  ('accessories', 'bags & luggage',
-      'grocery & gourmet foods', 'toys & baby products')
+	  ('accessories', 'men''s clothing',
+	  'men''s shoes', 'women''s clothing', 'women''s shoes')
 group by main_category; 
 
 
@@ -204,6 +207,28 @@ select corr(no_of_ratings, ratings) as correlation FROM duplicate_products dp;
 
 
 
+
+
+
+
+----
+WITH total_sales AS (
+    SELECT SUM(sales) AS total
+    FROM duplicate
+),
+selected_categories_sales AS (
+    SELECT SUM(sales) AS selected_total
+    FROM amazon
+    WHERE sub_category IN ('accessories', 'men''s clothing',
+'men''s shoes', 'women''s clothing', 'women''s shoes')
+)
+SELECT selected_total / total * 100 AS percentage
+FROM selected_categories_sales, total_sales;
+
+
+
+
+select * from duplicate_products dp; 
 
 
 
