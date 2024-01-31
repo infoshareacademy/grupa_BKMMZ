@@ -183,7 +183,8 @@ group by main_category;
 
 
 -- What a percent of sales are the 'Jewellery' and 'Clothing' sub-categories? 
-with total_sales as (
+with 
+total_sales as (
 	select sum(no_of_ratings) as total from duplicate_products dp
 	where main_category in ('accessories', 'men''s clothing',
 'men''s shoes', 'women''s clothing', 'women''s shoes')
@@ -254,7 +255,16 @@ GROUP BY main_category;
 
 
 
+-------------------------------------------------------------------------
 
+
+-- 3 The most sales produsts on main category
+select name, main_category, no_of_ratings
+from duplicate_products dp 
+where main_category in('accessories', 'men''s clothing',
+'men''s shoes', 'women''s clothing', 'women''s shoes') and no_of_ratings > 0
+order by no_of_ratings desc 
+limit 3;
 
 
 
