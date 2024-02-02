@@ -169,3 +169,104 @@ group by
 	main_category
 order by
 	correlation;
+
+-- Analyze the distribution of ratings
+select 
+  ratings,
+  count(*) as number_distribution
+from 
+  development_products
+where 
+	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	and ratings notnull 
+group by 
+  ratings
+order by
+  ratings;
+  
+-- Analyze the average ratings within each category
+select 
+	main_category,
+	sub_category,
+	avg(ratings) AS average_rating
+from
+	development_products
+where 
+	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+group by
+	main_category, sub_category
+order by
+	main_category, sub_category;
+	
+-- Calculate the average discount percentage
+select
+  avg((actual_price - discount_price) / actual_price * 100) as avg_discount_percentage
+from
+  development_products
+where 
+	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras');
+	
+-- Analyze the average price for products within specific ratings ranges
+select 
+  case 
+    when ratings between 0 and 1 then  '0-1'
+    when ratings between 1.1 and 2 then '1.1-2'
+    when ratings between 2.1 and 3 then '2.1-3'
+    when ratings between 3.1 and 4 then '3.1-4'
+    when ratings between 4.1 and 5 then '4.1-5'
+  end as rating_range,
+  round(cast(avg(actual_price)as numeric),2) as average_price
+from 
+	development_products
+where 
+	lower(main_category) in ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	and ratings notnull 
+group by 
+	rating_range
+order by
+	rating_range desc;
+	
+-- Analyze the distribution of discount percentages
+select 
+	min((1 - (discount_price / actual_price) * 100)) as min_discount_percentage,
+	max((1 - (discount_price / actual_price) * 100)) as max_discount_percentage,
+	avg((1 - (discount_price / actual_price) * 100)) as avg_discount_percentage
+from
+	development_products
+where 
+	lower(main_category) in ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	and discount_price notnull; 
+
+-- Analysis products that are above avg. rating, avg. price and avg. discount
+with averages as (
+select
+	name,
+	main_category,
+	ratings,
+	discount_price,
+	actual_price,
+	avg(ratings) as average_rating,
+	round(cast(avg(actual_price) as numeric),2) as average_price,
+	avg(((1 - discount_price / actual_price) * 100)) as average_perc_discount
+from 
+	development_products
+where 
+	lower(main_category) in ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	and ratings notnull
+	and discount_price notnull
+group by name, main_category, ratings, discount_price, actual_price
+)
+select
+	name,
+	main_category,
+	ratings,
+	discount_price,
+	actual_price
+from
+	averages
+where
+	ratings >= average_rating
+	and actual_price >= average_price
+	and (discount_price / actual_price) >= average_perc_discount
+order by
+	ratings DESC, actual_price ASC, discount_price DESC;
