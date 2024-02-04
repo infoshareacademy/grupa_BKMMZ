@@ -11,7 +11,7 @@ select
 from 
 	development_products
 where
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 group by
 	main_category;
 
@@ -26,7 +26,7 @@ select
 from 
 	development_products
 where
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 group by
 	main_category;
 	
@@ -40,7 +40,7 @@ select
 from 
 	development_products
 where
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 group by
 	main_category;
 	
@@ -51,7 +51,7 @@ select
 from
 	development_products
 where
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 group by 
 	main_category;
 
@@ -63,7 +63,7 @@ select
 from
 	development_products
 where
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 group by 
 	sub_category
 order by 
@@ -80,7 +80,7 @@ select
 from 
 	development_products
 where
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 	and no_of_ratings notnull 
 order by
 	no_of_ratings desc, ratings desc
@@ -93,7 +93,7 @@ select
 from
 	development_products
 where
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 group by 
 	main_category
 order by 
@@ -109,7 +109,7 @@ select
 from 
 	development_products
 where
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 	and discount_price notnull 
 )
 select
@@ -129,7 +129,7 @@ select
 from
   development_products
 where
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 GROUP BY
   main_category
 order by 
@@ -142,7 +142,7 @@ select
 from
 	development_products
 where
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')	
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')	
 group by
 	main_category
 order by
@@ -157,7 +157,7 @@ select
 from
 	development_products dp
 where
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 	and discount_price notnull 
 )
 select
@@ -177,7 +177,7 @@ select
 from 
   development_products
 where 
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 	and ratings notnull 
 group by 
   ratings
@@ -192,7 +192,7 @@ select
 from
 	development_products
 where 
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 group by
 	main_category, sub_category
 order by
@@ -204,7 +204,7 @@ select
 from
   development_products
 where 
-	lower(main_category) IN ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras');
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 	
 -- Analyze the average price for products within specific ratings ranges
 select 
@@ -219,7 +219,7 @@ select
 from 
 	development_products
 where 
-	lower(main_category) in ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 	and ratings notnull 
 group by 
 	rating_range
@@ -234,7 +234,7 @@ select
 from
 	development_products
 where 
-	lower(main_category) in ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 	and discount_price notnull; 
 
 -- Analysis products that are above avg. rating, avg. price and avg. discount
@@ -251,7 +251,7 @@ select
 from 
 	development_products
 where 
-	lower(main_category) in ('car & motorbike', 'pet supplies', 'sports & fitness', 'tv, audio & cameras')
+	lower(main_category) IN ('accessories', 'men''s clothing', 'men''s shoes', 'women''s clothing', 'women''s shoes')
 	and ratings notnull
 	and discount_price notnull
 group by name, main_category, ratings, discount_price, actual_price
@@ -270,3 +270,4 @@ where
 	and (discount_price / actual_price) >= average_perc_discount
 order by
 	ratings DESC, actual_price ASC, discount_price DESC;
+	
