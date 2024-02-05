@@ -79,10 +79,8 @@ type numeric
 using nullif(no_of_ratings, '')::numeric;
 
 
+
 -------------------------------------------------------------------------
-
-
-
 /* 
 analyze catogories:
  1 - accessories, 
@@ -92,12 +90,8 @@ analyze catogories:
  20 - women's shoes
 */
 
--- List main categories and sub categories
-SELECT main_category, sub_category 
-FROM duplicate_products dp
-WHERE main_category IN ('accessories', 'men''s clothing',
-'men''s shoes', 'women''s clothing', 'women''s shoes')
-GROUP BY main_category, sub_category;  
+
+-------------------------- DATA ANALYSIS --------------------------------
 
 
 -- Count products of each main category 
@@ -153,7 +147,7 @@ group by dp.main_category;
 
 
 
--- The most expensive product of each four categories
+-- The most expensive product of each five categories
 select j1.product_name, j1.main_category, max_price 
 from (
 	  select main_category, max(actual_price) as max_price
@@ -166,6 +160,7 @@ join (
 	select name as product_name, main_category, actual_price from duplicate_products
 ) as j1
 on sq.main_category = j1.main_category and sq.max_price = j1.actual_price;
+
 
 
 
@@ -223,7 +218,7 @@ from duplicate_products dp where main_category in ('accessories', 'men''s clothi
 
 
 
--- Comparison price actual product with price previous product and next product in the same main category
+-- Comparison price actual product with price previous product and next product in the same MAIN category
 select name, main_category, actual_price,
 lag(actual_price) over(partition by main_category order by id) as previous_product_price,
 lead(actual_price) over(partition by main_category order by id) as next_product_price
@@ -233,10 +228,10 @@ where main_category in ('accessories', 'men''s clothing',
 
 
 
--- Comparison price actual product with price previous product and next product in the same sub category
-select name, sub_category, actual_price,
-lag(actual_price) over (partition by sub_category order by id) as previous_product_price,
-lead(actual_price) over (partition by sub_category order by id) as next_product_price
+-- Comparison price actual product with price previous product and next product in the same SUB category
+select name, sub_category, actual_price notnull,
+lag(actual_price) over (partition by sub_category order by id) as previous_product_price notnull,
+lead(actual_price) over (partition by sub_category order by id) as next_product_price notnull
 from duplicate_products dp
 where main_category in ('accessories', 'men''s clothing',
 'men''s shoes', 'women''s clothing', 'women''s shoes');
@@ -255,9 +250,6 @@ GROUP BY main_category;
 
 
 
--------------------------------------------------------------------------
-
-
 -- 3 The most sales produsts on main category
 select name, main_category, no_of_ratings
 from duplicate_products dp 
@@ -265,6 +257,34 @@ where main_category in('accessories', 'men''s clothing',
 'men''s shoes', 'women''s clothing', 'women''s shoes') and no_of_ratings > 0
 order by no_of_ratings desc 
 limit 3;
+
+
+
+-------------------------------------------------------------------------
+
+
+
+-- Products where number of ratings is greater than 40000 and average is greater than 3.5
+with 
+num_of_rat as (
+	select *, (case when no_of_ratings > 40000 then 1 else 0 end) as num_of_rat_flag
+	from duplicate_products dp
+	where ratings > 3.5 and main_category in 
+  	('accessories', 'men''s clothing',
+	'men''s shoes', 'women''s clothing', 'women''s shoes')
+),
+ratings as (
+	select main_category, avg(ratings) as average_rat
+ 	from num_of_rat
+ 	where num_of_rat_flag = 1
+	group by main_category
+) 
+select main_category, round(cast(average_rat as numeric), 2) as average_ratings
+from ratings order by average desc;
+
+
+ 
+
 
 
 
