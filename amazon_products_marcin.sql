@@ -200,9 +200,9 @@ on sq.sub_category = j1.sub_category and sq.max_price = j1.actual_price order by
 
 
 -- Percent products on each main category, 
--- when ratings higher than 4 and price reduction higher than 20%
+-- when ratings higher than 4
 select main_category,
-round(cast(sum(case when ratings > 4 and discount_price > 20 then 1 else 0 end)
+round(cast(sum(case when ratings > 4 then 1 else 0 end)
 as numeric) / count(*) * 100, 2) as percent_product
 from duplicate_products dp
 where main_category in 
@@ -233,7 +233,7 @@ from total_sales, selected_categories_sales order by percentage_sales desc;
 
 
 -- The smallest discount of each four sub categories 
-select j1.product_name, j1.sub_category, min_discount
+/*select j1.product_name, j1.sub_category, min_discount
 from (
 	  select sub_category, min(discount_price) as min_discount
       from duplicate_products dp where main_category in 
@@ -244,7 +244,7 @@ from (
 join (
 	select name as product_name, sub_category, discount_price from duplicate_products
 ) as j1
-on sq.sub_category = j1.sub_category and sq.min_discount = j1.discount_price;
+on sq.sub_category = j1.sub_category and sq.min_discount = j1.discount_price;*/
 
 
 
@@ -268,8 +268,8 @@ where main_category in ('accessories', 'men''s clothing',
 
 -- Comparison price actual product with price previous product and next product in the same SUB category
 select name, sub_category, actual_price notnull,
-lag(actual_price) over (partition by sub_category order by id) as previous_product_price notnull,
-lead(actual_price) over (partition by sub_category order by id) as next_product_price notnull
+lag(actual_price) over (partition by sub_category order by id) as previous_product_price,
+lead(actual_price) over (partition by sub_category order by id) as next_product_price 
 from duplicate_products dp
 where main_category in ('accessories', 'men''s clothing',
 'men''s shoes', 'women''s clothing', 'women''s shoes');
@@ -287,49 +287,33 @@ where main_category in ('accessories', 'men''s clothing',
 GROUP BY main_category;
 
 
-
-
 -------------------------------------------------------------------------
 
 
 
--- Products where number of ratings is greater than 40000 and average is greater than 3.5
-with 
-num_of_rat as (
-	select *, (case when no_of_ratings > 40000 then 1 else 0 end) as num_of_rat_flag
-	from duplicate_products dp
-	where ratings > 3.5 and main_category in 
-  	('accessories', 'men''s clothing',
-	'men''s shoes', 'women''s clothing', 'women''s shoes')
-),
-ratings as (
-	select main_category, avg(ratings) as average_rat
- 	from num_of_rat
- 	where num_of_rat_flag = 1
-	group by main_category
-) 
-select main_category, round(cast(average_rat as numeric), 2) as average_ratings
-from ratings order by average desc;
+-- Products where products sales is greater than 50000 and average is greater than 3.5 MAIN category
+select distinct main_category, sum(no_of_ratings) as products_sales,
+round(cast(avg(ratings) as numeric), 2) as avg_ratings
+from duplicate_products dp  
+where no_of_ratings > 50000 and main_category in 
+('accessories', 'men''s clothing',
+'men''s shoes', 'women''s clothing', 'women''s shoes')
+group by main_category 
+having avg(ratings) > 3.5
+order by products_sales desc; 
 
 
 
--------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- Products where products sales is greater than 50000 and average is greater than 3.5 SUB category
+select distinct sub_category, sum(no_of_ratings) as products_sales,
+round(cast(avg(ratings) as numeric), 2) as avg_ratings
+from duplicate_products dp  
+where no_of_ratings > 50000 and main_category in 
+('accessories', 'men''s clothing',
+'men''s shoes', 'women''s clothing', 'women''s shoes')
+group by sub_category 
+having avg(ratings) > 3.5
+order by products_sales desc;
 
 
 
