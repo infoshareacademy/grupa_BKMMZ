@@ -95,11 +95,11 @@ analyze catogories:
 
 
 -- Count products of each main category 
-select main_category, count(*) as products_count 
+select main_category, count(*) 
 from duplicate_products dp
 where main_category in ('accessories', 'men''s clothing',
 'men''s shoes', 'women''s clothing', 'women''s shoes')
-group by main_category;
+group by main_category order by count(*) desc;
 
 
 
@@ -108,25 +108,25 @@ select sub_category, count(*) as products_count
 from duplicate_products dp
 where main_category in ('accessories', 'men''s clothing',
 'men''s shoes', 'women''s clothing', 'women''s shoes')
-group by sub_category;
+group by sub_category order by products_count desc;
 
 
 
--- Products sale in main categories
-select main_category, count(no_of_ratings) as products_sale
-from duplicate_products dp
+-- Total Products sale in main categories
+select main_category, sum(no_of_ratings) as products_sale
+from duplicate_products dp 
 where main_category in ('accessories', 'men''s clothing', 'men''s shoes',
 'women''s clothing', 'women''s shoes') 
-group by dp.main_category;
+group by dp.main_category order by products_sale desc;
 
 
 
 -- Products sale in sub categories
-select sub_category, count(no_of_ratings) as products_sale
+select main_category, sub_category, sum(no_of_ratings) as products_sale
 from duplicate_products dp
 where main_category in ('accessories', 'men''s clothing', 'men''s shoes',
 'women''s clothing', 'women''s shoes') 
-group by dp.sub_category order by products_sale desc;
+group by dp.main_category, dp.sub_category order by products_sale desc;
 
 
 
@@ -159,11 +159,11 @@ group by main_category order by average_ratings desc;
 
 
 -- Sub categories with average ratings
-select sub_category, round(cast(avg(ratings) as numeric), 2) as average_ratings
+select main_category, sub_category, round(cast(avg(ratings) as numeric), 2) as average_ratings
 from duplicate_products dp
 where main_category in ('accessories', 'men''s clothing',
 'men''s shoes', 'women''s clothing', 'women''s shoes')
-group by sub_category order by average_ratings desc; 
+group by main_category, sub_category order by average_ratings desc; 
 
 
 
@@ -184,13 +184,13 @@ on sq.main_category = j1.main_category and sq.max_price = j1.actual_price order 
 
 
 -- The most expensives product in sub categories
-select j1.product_name, j1.sub_category, max_price 
+select main_category, j1.product_name, j1.sub_category, max_price 
 from (
-	  select sub_category, max(actual_price) as max_price
+	  select main_category, sub_category, max(actual_price) as max_price
       from duplicate_products dp where main_category in 
 	  ('accessories', 'men''s clothing',
 	  'men''s shoes', 'women''s clothing', 'women''s shoes')
-	  group by sub_category
+	  group by main_category, sub_category
 ) as sq
 join (
 	select name as product_name, sub_category, actual_price from duplicate_products
@@ -233,18 +233,13 @@ from total_sales, selected_categories_sales order by percentage_sales desc;
 
 
 -- The smallest discount of each four sub categories 
-/*select j1.product_name, j1.sub_category, min_discount
+select name, sub_category, actual_price, discount
 from (
-	  select sub_category, min(discount_price) as min_discount
+	  select name, actual_price, sub_category, discount_price as discount
       from duplicate_products dp where main_category in 
 	  ('accessories', 'men''s clothing',
-	  'men''s shoes', 'women''s clothing', 'women''s shoes')
-	  group by sub_category
-) as sq
-join (
-	select name as product_name, sub_category, discount_price from duplicate_products
-) as j1
-on sq.sub_category = j1.sub_category and sq.min_discount = j1.discount_price;*/
+	  'men''s shoes', 'women''s clothing', 'women''s shoes')) 
+
 
 
 
@@ -314,6 +309,14 @@ where no_of_ratings > 50000 and main_category in
 group by sub_category 
 having avg(ratings) > 3.5
 order by products_sales desc;
+
+
+
+-- Dominanta
+select 
+
+
+
 
 
 
