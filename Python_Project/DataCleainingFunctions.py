@@ -1,0 +1,13 @@
+def stats(dataframe) :
+    print('### Shape ###')
+    print(f'Rows: {dataframe.shape[0]}')
+    print(f'Columns: {dataframe.shape[1]}')
+    print('\n')
+    print('### Data Types ###')
+    print(dataframe.dtypes)
+    print('\n')
+    print('### Missing Values ###')
+    print(dataframe.isna().sum())
+    print('\n')
+    print('### Duplicate Values ###')
+    print(dataframe.duplicated().sum())
