@@ -1,3 +1,5 @@
+import numpy as np
+
 def stats(dataframe) :
     """Returns informations about dataset - shape and data types"""
     print('### Shape ###')
@@ -24,3 +26,15 @@ def drop_treshold(dataframe) :
     """ Return infrmation which column is in drop treshold of 5% missing values"""
     tresh = int(len(dataframe) * 0.05)
     return dataframe.columns[dataframe.isna().sum() <= tresh]
+
+def dataset_IQR(col) :
+    """ Calculate IQR for given column """
+    return np.quantile(col, 0.75) - np.quantile(col, 0.25)
+
+def lower_tresh(col):
+   """ Calculate lower treshold """ 
+   return np.quantile(col, 0.25) - 1.5 * dataset_IQR(col)
+
+def upper_tresh(col) :
+    """ Calculate upper treshold """
+    return np.quantile(col, 0.75) + 1.5 * dataset_IQR(col)
