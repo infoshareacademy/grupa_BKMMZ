@@ -6,6 +6,10 @@ import datetime
 
 
 
+def fun():
+    print("Hello")
+
+
 
 
 
